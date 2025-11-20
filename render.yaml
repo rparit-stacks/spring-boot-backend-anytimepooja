@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: anytime-pooja-backend
+    env: java
+    buildCommand: ./mvnw -B clean package -DskipTests
+    startCommand: java -jar target/pooja-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: JAVA_OPTS
+        value: -Xmx512m -Xms256m
+      # Add your database URL from Render Postgres addon
+      # - key: SPRING_DATASOURCE_URL
+      #   value: ${DATABASE_URL}
+      # - key: SPRING_DATASOURCE_USERNAME
+      #   value: ${DATABASE_USERNAME}
+      # - key: SPRING_DATASOURCE_PASSWORD
+      #   value: ${DATABASE_PASSWORD}
+    healthCheckPath: /actuator/health
+

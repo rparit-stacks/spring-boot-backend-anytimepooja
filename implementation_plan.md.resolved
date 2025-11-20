@@ -1,0 +1,97 @@
+# Implementation Plan - Anytime Pooja Backend (Spring Boot)
+
+## Goal Description
+Build a comprehensive, production-ready backend for "Anytime Pooja" using **Spring Boot** and **MySQL**. The system will use **RBAC** (Role-Based Access Control) and cover all 5 modules with detailed features.
+
+## User Review Required
+> [!IMPORTANT]
+> **Database Credentials**: Please provide `username` and `password` for MySQL.
+
+## Proposed Changes
+
+### 1. Project Configuration
+- **Dependencies**: Web, JPA, Security, MySQL Driver, Lombok, Validation (Hibernate Validator).
+- **Properties**: Database config, File upload limits (for KYC/Images).
+
+### 2. Detailed Database Schema (Entities)
+
+#### A. Core User & Auth
+- `User`: id, name, email, phone, password, role (USER, PANDIT, ADMIN), created_at.
+- `Address`: user_id, street, city, state, zip, lat, lng.
+
+#### B. Module 1: Pandit Application
+- `PanditProfile`: user_id, bio, experience_years, languages (Set<String>), is_verified (KYC status).
+- `KYCDetails`: pandit_id, document_type, document_number, document_image_url, status (PENDING, APPROVED, REJECTED).
+- `BankDetails`: pandit_id, account_number, ifsc, bank_name, holder_name (For Payouts).
+- `PanditService`: pandit_id, service_name, price, duration_mins, description.
+- `Availability`: pandit_id, date, start_time, end_time, is_booked.
+
+#### C. Module 2: User Application & Booking
+- `Booking`: id, user_id, pandit_id, service_id, date, time, status (PENDING, CONFIRMED, COMPLETED, CANCELLED), total_amount, payment_id, payment_status.
+- `Review`: booking_id, rating (1-5), comment.
+- `SupportTicket`: user_id, subject, message, status (OPEN, CLOSED), admin_reply.
+
+#### D. Module 4 & 5: E-commerce
+- `Category`: id, name, image_url.
+- `Product`: id, category_id, name, description, price, stock_quantity, image_url.
+- `Cart`: user_id, total_amount.
+- `CartItem`: cart_id, product_id, quantity.
+- `Order`: user_id, total_amount, status (PLACED, SHIPPED, DELIVERED), shipping_address.
+- `OrderItem`: order_id, product_id, price, quantity.
+- `Wishlist`: user_id, product_id.
+- `Coupon`: code, discount_percentage, expiry_date, min_order_value.
+
+### 3. Comprehensive API List
+
+#### Authentication (Public)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/auth/register` | Register (User/Pandit). Payload: `{name, email, phone, password, role}` |
+| POST | `/api/auth/login` | Login. Returns Session/Cookie. |
+
+#### Module 1: Pandit Features (ROLE_PANDIT)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| PUT | `/api/pandit/profile` | Update Bio, Experience, Languages. |
+| POST | `/api/pandit/kyc` | **[New]** Upload KYC Docs (Multipart File). |
+| GET | `/api/pandit/kyc/status` | Check verification status. |
+| PUT | `/api/pandit/bank-details` | **[New]** Update Bank Info for payouts. |
+| POST | `/api/pandit/services` | Add Service (e.g., "Satyanarayan Puja", ₹1500). |
+| PUT | `/api/pandit/availability` | Set working hours. |
+| GET | `/api/pandit/bookings` | View incoming bookings. |
+| PUT | `/api/pandit/bookings/{id}` | Accept/Reject booking. |
+| GET | `/api/pandit/earnings` | **[New]** View total earnings & payout history. |
+
+#### Module 2: User Features (ROLE_USER)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| GET | `/api/pandits/search` | Filter by City, Puja Category, Date. |
+| POST | `/api/bookings` | Book a service. |
+| GET | `/api/bookings/{id}/receipt` | **[New]** Generate Digital Receipt details. |
+| POST | `/api/support/tickets` | **[New]** Raise a support ticket. |
+| POST | `/api/reviews` | Rate a completed booking. |
+
+#### Module 3: Admin Features (ROLE_ADMIN)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| GET | `/api/admin/kyc/pending` | **[New]** List pandits waiting for verification. |
+| PUT | `/api/admin/kyc/{id}/approve` | Approve Pandit KYC. |
+| GET | `/api/admin/payouts` | **[New]** View pending payouts to Pandits. |
+| PUT | `/api/admin/tickets/{id}/reply` | **[New]** Reply to support tickets. |
+| POST | `/api/admin/notifications` | **[New]** Send Push Notification (Mock). |
+
+#### Module 4 & 5: E-commerce (User & Admin)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/api/cart/add` | Add product to cart. |
+| POST | `/api/wishlist/add` | **[New]** Add to Wishlist. |
+| POST | `/api/orders/checkout` | Place order (Apply Coupon optional). |
+| POST | `/api/admin/coupons` | **[New]** Create Discount Coupon. |
+| PUT | `/api/admin/inventory/{id}` | **[New]** Update Product Stock. |
+
+## Verification Plan
+1.  **Project Init**: Verify [pom.xml](file:///e:/Nytime-Pooja/anytime-pooja-backend/pom.xml) loads all dependencies.
+2.  **Database**: Verify all 15+ tables are created correctly in MySQL.
+3.  **Flow Test**:
+    *   Register Pandit -> Upload KYC -> Admin Approves -> Pandit Adds Service.
+    *   User Registers -> Searches Pandit -> Books Service.
