@@ -18,6 +18,27 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
+        // Skip authentication filter for public endpoints
+        // Note: context-path is /api, so paths are relative to that
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/") || 
+            path.startsWith("/api/cms/") ||
+            path.startsWith("/api/products/") ||
+            path.startsWith("/api/categories/") ||
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/api-docs") ||
+            path.startsWith("/v3/api-docs") ||
+            path.equals("/api/actuator/health") ||
+            path.equals("/api/error") ||
+            path.equals("/favicon.ico") ||
+            path.startsWith("/auth/") ||
+            path.startsWith("/cms/") ||
+            path.startsWith("/products/") ||
+            path.startsWith("/categories/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         try {
             String sessionId = getSessionIdFromRequest(request);
             

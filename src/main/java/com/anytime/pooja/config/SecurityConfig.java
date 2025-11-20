@@ -75,11 +75,12 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints (No authentication required)
+                // Note: context-path is /api, so paths are relative to that
                 .requestMatchers(
-                    "/api/auth/**",
-                    "/api/cms/**",
-                    "/api/products/**",  // Public product browsing
-                    "/api/categories/**", // Public category browsing
+                    "/auth/**",
+                    "/cms/**",
+                    "/products/**",  // Public product browsing
+                    "/categories/**", // Public category browsing
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/api-docs/**",
@@ -90,40 +91,40 @@ public class SecurityConfig {
                 ).permitAll()
                 
                 // User Management - All authenticated users can access
-                .requestMatchers("/api/users/profile", "/api/users/update-profile").hasAnyRole("USER", "PANDIT", "ADMIN")
-                .requestMatchers("/api/users/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/users/profile", "/users/update-profile").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/users/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // Shopping endpoints - USER and ADMIN only
-                .requestMatchers("/api/cart/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/wishlist/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/cart/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/orders/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/wishlist/**").hasAnyRole("USER", "ADMIN")
                 
                 // Reviews - All authenticated users
-                .requestMatchers("/api/reviews/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/reviews/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // Pandit endpoints - PANDIT and ADMIN only
-                .requestMatchers("/api/pandit/**").hasAnyRole("PANDIT", "ADMIN")
+                .requestMatchers("/pandit/**").hasAnyRole("PANDIT", "ADMIN")
                 
                 // Booking endpoints - USER, PANDIT, and ADMIN
-                .requestMatchers("/api/bookings/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/bookings/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // Admin endpoints - ADMIN only
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 
                 // Chat endpoints - All authenticated users
-                .requestMatchers("/api/chat/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/chat/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // WebSocket endpoints - Security handled via WebSocketSecurityInterceptor
                 .requestMatchers("/ws/**").permitAll()
                 
                 // Notification endpoints - All authenticated users
-                .requestMatchers("/api/notifications/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/notifications/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // Payment endpoints - USER and ADMIN only
-                .requestMatchers("/api/payments/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/payments/**").hasAnyRole("USER", "ADMIN")
                 
                 // Support endpoints - All authenticated users
-                .requestMatchers("/api/support/**").hasAnyRole("USER", "PANDIT", "ADMIN")
+                .requestMatchers("/support/**").hasAnyRole("USER", "PANDIT", "ADMIN")
                 
                 // All other requests require authentication
                 .anyRequest().authenticated()
