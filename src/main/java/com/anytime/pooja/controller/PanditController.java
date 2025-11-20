@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pandit")
+@RequestMapping("/pandit")
 public class PanditController {
 
     @Autowired

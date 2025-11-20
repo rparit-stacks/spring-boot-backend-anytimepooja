@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/support")
+@RequestMapping("/support")
 public class SupportController {
 
     @Autowired

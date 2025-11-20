@@ -53,7 +53,8 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(passwordEncoder());
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setUserDetailsService(userDetailsService);
         return authProvider;
     }
@@ -81,6 +82,7 @@ public class SecurityConfig {
                     "/cms/**",
                     "/products/**",  // Public product browsing
                     "/categories/**", // Public category browsing
+                    "/pandits/**",   // Public pandit search and profiles
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/api-docs/**",
